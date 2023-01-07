@@ -44,6 +44,7 @@ class UserAdmin(UserAdmin):
             ]
         }),
         ('Другое', {
+            'classes': ('collapse',),
             'fields': [
                 'last_login',
                 'date_joined',

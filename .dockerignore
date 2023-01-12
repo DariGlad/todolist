@@ -1,0 +1,16 @@
+passwords.txt
+postgres_data/
+.git/
+.github/
+.idea/
+.env
+.env.example
+poetry.lock
+docker-compose.yaml
+docker-compose-ci.yaml
+README.md
+env/
+.gitignore
+.python-version
+__pycache__/
+venv/

@@ -29,8 +29,8 @@ jobs:
       API_PORT: ${{ secrets.API_PORT }}
       DB_PORT: ${{ secrets.DB_PORT }}
     steps:
-      - name: chekout
-        uses: actions/chekout@v2
+      - name: checkout
+        uses: actions/checkout@v2
       - name: render config
         run: |
           mkdir deploy

@@ -53,4 +53,5 @@ jobs:
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
             cd deploy
+            docker-compose down
             docker-compose up -d

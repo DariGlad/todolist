@@ -28,6 +28,8 @@ jobs:
       FRONTEND_PORT: ${{ secrets.FRONTEND_PORT }}
       API_PORT: ${{ secrets.API_PORT }}
       DB_PORT: ${{ secrets.DB_PORT }}
+      SOCIAL_AUTH_VK_OAUTH2_KEY: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_KEY }}
+      SOCIAL_AUTH_VK_OAUTH2_SECRET: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_SECRET }}
     steps:
       - name: checkout
         uses: actions/checkout@v2

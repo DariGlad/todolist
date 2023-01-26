@@ -79,3 +79,23 @@ class Goal(DatesModelMixin):
 
     def __str__(self):
         return self.title
+
+
+class GoalComment(DatesModelMixin):
+    class Meta:
+        verbose_name = 'комментарий к цели'
+        verbose_name_plural = 'комментарии к цели'
+
+    user = models.ForeignKey(
+        'core.User',
+        verbose_name='автор',
+        related_name='goal_comments',
+        on_delete=models.PROTECT,
+    )
+    goal = models.ForeignKey(
+        'goals.Goal',
+        verbose_name='цель',
+        related_name='goal_comments',
+        on_delete=models.PROTECT,
+    )
+    text = models.TextField(verbose_name='текст')

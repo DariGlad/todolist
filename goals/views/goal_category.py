@@ -3,7 +3,7 @@ from rest_framework.generics import CreateAPIView, RetrieveUpdateDestroyAPIView,
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 
-from goals.models import GoalCategory
+from goals.models import GoalCategory, Goal
 from goals.serializers import GoalCategoryCreateSerializer, GoalCategorySerializer
 
 
@@ -23,6 +23,7 @@ class GoalCategoryView(RetrieveUpdateDestroyAPIView):
 
     def perform_destroy(self, instance):
         instance.is_deleted = True
+        Goal.objects.filter(category_id__exact=instance.id).update(status=Goal.Status.archived)
         instance.save()
         return instance
 
@@ -42,7 +43,6 @@ class GoalCategoryListView(ListAPIView):
     ]
     ordering = ['title']
     search_fields = ['title']
-
 
     def get_queryset(self):
         return GoalCategory.objects.filter(user=self.request.user, is_deleted=False)

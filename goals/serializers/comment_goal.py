@@ -11,7 +11,7 @@ class CommentCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GoalComment
-        read_only_field = ('id', 'create', 'updated', 'user')
+        read_only_fields = ('id', 'created', 'updated', 'user')
         fields = '__all__'
 
     def validate_goal(self, value):
@@ -25,7 +25,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GoalComment
-        read_only_field = ('id', 'create', 'updated', 'user', 'goal')
+        read_only_fields = ('id', 'created', 'updated', 'user', 'goal')
         fields = '__all__'
 
     def validate_goal(self, value):

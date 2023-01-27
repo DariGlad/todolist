@@ -11,7 +11,7 @@ class GoalCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Goal
-        read_only_field = ('id', 'create', 'updated', 'user')
+        read_only_fields = ('id', 'created', 'updated', 'user')
         fields = '__all__'
 
     def validate_category(self, value):
@@ -27,7 +27,7 @@ class GoalSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Goal
-        read_only_field = ('id', 'create', 'updated', 'user')
+        read_only_fields = ('id', 'created', 'updated', 'user')
         fields = '__all__'
 
     def validate_category(self, value):

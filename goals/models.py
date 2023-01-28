@@ -17,6 +17,12 @@ class GoalCategory(DatesModelMixin):
     title = models.CharField(verbose_name='название', max_length=255)
     user = models.ForeignKey('core.User', verbose_name='автор', on_delete=models.PROTECT)
     is_deleted = models.BooleanField(verbose_name='удалена', default=False)
+    board = models.ForeignKey(
+        'goals.Board',
+        verbose_name="Доска",
+        on_delete=models.PROTECT,
+        related_name="categories"
+    )
 
     def __str__(self):
         return self.title
@@ -99,3 +105,48 @@ class GoalComment(DatesModelMixin):
         on_delete=models.PROTECT,
     )
     text = models.TextField(verbose_name='текст')
+
+
+class Board(DatesModelMixin):
+    class Meta:
+        verbose_name = "Доска"
+        verbose_name_plural = "Доски"
+
+    title = models.CharField(verbose_name="Название", max_length=255)
+    is_deleted = models.BooleanField(verbose_name="Удалена", default=False)
+
+    def __str__(self):
+        return self.title
+
+
+class BoardParticipant(DatesModelMixin):
+    class Meta:
+        unique_together = ("board", "user")
+        verbose_name = "Участник"
+        verbose_name_plural = "Участники"
+
+    class Role(models.IntegerChoices):
+        owner = 1, "Владелец"
+        writer = 2, "Редактор"
+        reader = 3, "Читатель"
+
+    editable_choices = Role.choices
+    editable_choices.pop(0)
+
+    board = models.ForeignKey(
+        'goals.Board',
+        verbose_name="Доска",
+        on_delete=models.PROTECT,
+        related_name="participants",
+    )
+    user = models.ForeignKey(
+        'core.User',
+        verbose_name="Пользователь",
+        on_delete=models.PROTECT,
+        related_name="participants",
+    )
+    role = models.PositiveSmallIntegerField(
+        verbose_name="Роль",
+        choices=Role.choices,
+        default=Role.owner,
+    )

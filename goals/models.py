@@ -3,7 +3,7 @@ from django.db import models
 
 class DatesModelMixin(models.Model):
     class Meta:
-        abstract = True
+        abstract = True # Абстрактный класс, для него не будет таблички в базе данных
 
     created = models.DateTimeField(verbose_name="Дата создания", auto_now_add=True)
     updated = models.DateTimeField(verbose_name="Дата последнего обновления", auto_now_add=True)

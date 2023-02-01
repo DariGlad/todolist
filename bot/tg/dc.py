@@ -19,10 +19,10 @@ class MessageFrom:
 @dataclass
 class Chat:
     id: int
+    type: str
     first_name: str | None = None
     last_name: str | None = None
     username: str | None = None
-    type: str
 
     class Meta:
         unknown = EXCLUDE

@@ -21,7 +21,6 @@ class TgUserSerializer(serializers.ModelSerializer):
         ]
 
     def validate(self, attrs):
-        print(attrs)
         verification_code = attrs.get('verification_code')
         tg_user = TgUser.objects.filter(verification_code=verification_code).first()
         if not tg_user:

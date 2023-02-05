@@ -14,3 +14,4 @@ env/
 .python-version
 __pycache__/
 venv/
+.mypy_cache/

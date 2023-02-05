@@ -24,7 +24,7 @@ class Command(BaseCommand):
                 offset = item.update_id + 1
                 self.handle_message(item.message)
 
-    def handle_message(self, msg):
+    def handle_message(self, msg: Message | None) -> None:
         """ Проверяет верификацию пользователя """
         if not msg:
             return
@@ -53,7 +53,7 @@ class Command(BaseCommand):
 
         self.tg_client.send_message(msg.chat.id, resp.get('message', None))
 
-    def handle_user_without_verification(self, msg, tg_user):
+    def handle_user_without_verification(self, msg: Message, tg_user: TgUser) -> None:
         """ Обрабатывает сообщение неподтверждённого пользователя и выдает код верификации и ссылку на сайт """
         tg_user.set_verification_code()
         tg_user.save(update_fields=['verification_code'])

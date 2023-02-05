@@ -19,6 +19,7 @@ class MsgManager:
         title_goal_input = auto(), 'ввод названия цели'
 
     def check_commands(self, msg: Message, tg_user: TgUser):
+        """ Проверяет вводимые команды пользователя """
         match msg.text:
             case '/goals':
                 self.goals(msg, tg_user)
@@ -33,6 +34,7 @@ class MsgManager:
         return self.response
 
     def check_state(self, msg: Message, tg_user: TgUser):
+        """ Проверяет состояние: бездействие, создание цели"""
         match self.state:
             case self.State.idle:
                 self.response['message'] = 'введите команду'
@@ -43,6 +45,7 @@ class MsgManager:
         return self.response
 
     def goals(self, msg, tg_user):
+        """ Проверяет наличие целей и выводит в тг чате их наличие """
         goals = (
             Goal.objects.filter(category__board__participants__user=tg_user.user).
             exclude(status=Goal.Status.archived)
@@ -55,6 +58,7 @@ class MsgManager:
         return self.response
 
     def category_input(self, msg, tg_user):
+        """ Находит категорию для создания цели """
         category = GoalCategory.objects.filter(
             title__exact=msg.text,
             board__participants__user=tg_user.user,
@@ -71,12 +75,14 @@ class MsgManager:
         return self.response
 
     def start_create_goal(self, msg, tg_user):
+        """ Выводит список категорий для создания цели и переключает статус на ввод категории """
         self.response['message'] = (f'выберите в какой категории создать цель:'
                                     f'\n{self.category(msg, tg_user).get("message")}')
         self.state = self.State.category_input
         return self.response
 
     def category(self, msg, tg_user):
+        """ Проверяет наличие и название категорий и выводит список категорий в тг чате """
         category = GoalCategory.objects.filter(
             board__participants__user=tg_user.user,
             is_deleted=False
@@ -89,12 +95,14 @@ class MsgManager:
         return self.response
 
     def cancel(self):
+        """ Отмена создания цели(устанавливает статус бездействия) """
         self.storage_for_create = {}
         self.response['message'] = 'операция отменена'
         self.state = self.State.idle
         return self.response
 
     def title_goal_input(self, msg, tg_user):
+        """ Получает название цели и создаёт её """
         category = self.storage_for_create['category']
         goal = Goal.objects.create(
             user=tg_user.user,

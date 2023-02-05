@@ -16,6 +16,7 @@ class Command(BaseCommand):
         self.msg_manager = MsgManager()
 
     def handle(self, *args, **options):
+        """ Обрабатывает чат """
         offset = 0
         while True:
             res = self.tg_client.get_updates(offset=offset)
@@ -24,6 +25,7 @@ class Command(BaseCommand):
                 self.handle_message(item.message)
 
     def handle_message(self, msg):
+        """ Проверяет верификацию пользователя """
         if not msg:
             return
         tg_user, created = TgUser.objects.get_or_create(
@@ -41,6 +43,7 @@ class Command(BaseCommand):
             self.handle_user_without_verification(msg, tg_user)
 
     def handle_verified_user(self, msg: Message, tg_user):
+        """ Обрабатывает сообщения подтверждённого пользователя и отправляет ответ """
         if not msg.text:
             return
         if msg.text.startswith('/'):
@@ -51,6 +54,7 @@ class Command(BaseCommand):
         self.tg_client.send_message(msg.chat.id, resp.get('message', None))
 
     def handle_user_without_verification(self, msg, tg_user):
+        """ Обрабатывает сообщение неподтверждённого пользователя и выдает код верификации и ссылку на сайт """
         tg_user.set_verification_code()
         tg_user.save(update_fields=['verification_code'])
         self.tg_client.send_message(

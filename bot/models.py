@@ -26,7 +26,7 @@ class TgUser(models.Model):
     def __str__(self):
         return self.username
 
-    def set_verification_code(self):
+    def set_verification_code(self) -> None:
         self.verification_code = ''.join(
             random.choice(string.digits + string.ascii_letters) for _ in range(12)
         )

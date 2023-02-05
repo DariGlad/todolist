@@ -1,4 +1,5 @@
 from enum import Enum, auto
+from typing import Any
 
 from django.conf import settings
 
@@ -8,9 +9,9 @@ from goals.models import Goal, GoalCategory
 
 
 class MsgManager:
-    def __init__(self):
-        self.storage_for_create = {}
-        self.response = {}
+    def __init__(self) -> None:
+        self.storage_for_create: dict[str, Any] = {}
+        self.response: dict[str, str] = {}
         self.state = self.State.idle
 
     class State(Enum):
@@ -18,7 +19,8 @@ class MsgManager:
         category_input = auto(), 'ввод названия категории для создания цели'
         title_goal_input = auto(), 'ввод названия цели'
 
-    def check_commands(self, msg: Message, tg_user: TgUser):
+    def check_commands(self, msg: Message, tg_user: TgUser) -> dict[str, str]:
+        """ Проверяет вводимые команды пользователя """
         match msg.text:
             case '/goals':
                 self.goals(msg, tg_user)
@@ -32,7 +34,8 @@ class MsgManager:
                 self.response['message'] = 'неизвестная команда'
         return self.response
 
-    def check_state(self, msg: Message, tg_user: TgUser):
+    def check_state(self, msg: Message, tg_user: TgUser) -> dict[str, str]:
+        """ Проверяет состояние: бездействие, создание цели"""
         match self.state:
             case self.State.idle:
                 self.response['message'] = 'введите команду'
@@ -42,7 +45,8 @@ class MsgManager:
                 self.title_goal_input(msg, tg_user)
         return self.response
 
-    def goals(self, msg, tg_user):
+    def goals(self, msg: Message, tg_user: TgUser) -> dict[str, str]:
+        """ Проверяет наличие целей и выводит в тг чате их наличие """
         goals = (
             Goal.objects.filter(category__board__participants__user=tg_user.user).
             exclude(status=Goal.Status.archived)
@@ -54,7 +58,8 @@ class MsgManager:
             self.response['message'] = 'список целей пуст'
         return self.response
 
-    def category_input(self, msg, tg_user):
+    def category_input(self, msg: Message, tg_user: TgUser) -> dict[str, str]:
+        """ Находит категорию для создания цели """
         category = GoalCategory.objects.filter(
             title__exact=msg.text,
             board__participants__user=tg_user.user,
@@ -70,13 +75,15 @@ class MsgManager:
             self.response['message'] += self.category(msg, tg_user)['message']
         return self.response
 
-    def start_create_goal(self, msg, tg_user):
+    def start_create_goal(self, msg: Message, tg_user: TgUser) -> dict[str, str]:
+        """ Выводит список категорий для создания цели и переключает статус на ввод категории """
         self.response['message'] = (f'выберите в какой категории создать цель:'
                                     f'\n{self.category(msg, tg_user).get("message")}')
         self.state = self.State.category_input
         return self.response
 
-    def category(self, msg, tg_user):
+    def category(self, msg: Message, tg_user: TgUser) -> dict[str, str]:
+        """ Проверяет наличие и название категорий и выводит список категорий в тг чате """
         category = GoalCategory.objects.filter(
             board__participants__user=tg_user.user,
             is_deleted=False
@@ -88,13 +95,15 @@ class MsgManager:
             self.response['message'] = 'список категорий пуст'
         return self.response
 
-    def cancel(self):
+    def cancel(self) -> dict[str, str]:
+        """ Отмена создания цели(устанавливает статус бездействия) """
         self.storage_for_create = {}
         self.response['message'] = 'операция отменена'
         self.state = self.State.idle
         return self.response
 
-    def title_goal_input(self, msg, tg_user):
+    def title_goal_input(self, msg: Message, tg_user: TgUser) -> dict[str, str]:
+        """ Получает название цели и создаёт её """
         category = self.storage_for_create['category']
         goal = Goal.objects.create(
             user=tg_user.user,

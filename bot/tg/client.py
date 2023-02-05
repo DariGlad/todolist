@@ -4,13 +4,15 @@ from bot.tg.dc import GetUpdatesResponse, SendMessageResponse
 
 
 class TgClient:
-    def __init__(self, token):
+    def __init__(self, token) -> None:
         self.token = token
 
     def get_url(self, method: str):
+        """ Возвращает url бота """
         return f"https://api.telegram.org/bot{self.token}/{method}"
 
     def get_updates(self, offset: int = 0, timeout: int = 60) -> GetUpdatesResponse:
+        """ Возвращает сообщения полученные от пользователей """
         url = self.get_url('getUpdates')
         response = requests.get(
             url,
@@ -21,7 +23,8 @@ class TgClient:
         )
         return GetUpdatesResponse.Schema().load(response.json())
 
-    def send_message(self, chat_id: int, text: str) -> SendMessageResponse:
+    def send_message(self, chat_id: int, text: str | None) -> SendMessageResponse:
+        """ Посылает сообщение пользователю по id чата """
         url = self.get_url('sendMessage')
         response = requests.post(
             url,
